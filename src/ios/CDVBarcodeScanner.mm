@@ -414,6 +414,23 @@ parentViewController:(UIViewController*)parentViewController
         device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
         if (!device) return @"unable to obtain video capture device";
         
+        if ([device isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+            if ([device lockForConfiguration:&error]) {
+                if ([device isFocusPointOfInterestSupported]) {
+                    CGPoint autofocusPoint = CGPointMake(0.5f, 0.5f);
+                    [device setFocusPointOfInterest:autofocusPoint];
+                }
+                if ([device isAutoFocusRangeRestrictionSupported]) {
+                    [device setAutoFocusRangeRestriction:AVCaptureAutoFocusRangeRestrictionNear];
+                }
+                if ([device isSmoothAutoFocusSupported]) {
+                    [device setSmoothAutoFocusEnabled:true];
+                }
+                [device setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+                [device unlockForConfiguration];
+            }
+        }
+        
     }
     
     
